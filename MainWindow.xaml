@@ -1,0 +1,188 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Proiect_Medii"
+        xmlns:EvidentaModel="clr-namespace:EvidentaModel;assembly=EvidentaModel" x:Class="Proiect_Medii.MainWindow"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+    <Window.Resources>
+        <CollectionViewSource x:Key="studentViewSource" d:DesignSource="{d:DesignInstance {x:Type EvidentaModel:Student}, CreateList=True}"/>
+        <CollectionViewSource x:Key="facultateViewSource" d:DesignSource="{d:DesignInstance {x:Type EvidentaModel:Facultate}, CreateList=True}"/>
+        <CollectionViewSource x:Key="catalogViewSource" d:DesignSource="{d:DesignInstance {x:Type EvidentaModel:Catalog}, CreateList=True}"/>
+        <CollectionViewSource x:Key="studentCatalogsViewSource" Source="{Binding Catalogs, Source={StaticResource studentViewSource}}"/>
+        <ControlTemplate x:Key="validationTemplate">
+            <DockPanel>
+                <TextBlock Foreground="Red" FontSize="20">!</TextBlock>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        <Style x:Key="textBoxInError" TargetType="{x:Type TextBox}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self},Path=(Validation.Errors)/ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <TabControl HorizontalAlignment="Left" Height="399" Margin="10,10,0,0" VerticalAlignment="Top" Width="772">
+            <TabItem Header="Studenti">
+                <Grid Background="#FFE5E5E5" DataContext="{StaticResource studentViewSource}">
+                    <Button x:Name="btnDeleteStudent" Content="Delete" HorizontalAlignment="Left" Margin="337,133,0,0" VerticalAlignment="Top" Width="75" Click="btnDeleteStudent_Click"/>
+                    <Button x:Name="btnEditStudent" Content="Edit" HorizontalAlignment="Left" Margin="337,91,0,0" VerticalAlignment="Top" Width="75" Click="btnEditStudent_Click"/>
+                    <Button x:Name="btnNewStudent" Content="New" HorizontalAlignment="Left" Margin="337,53,0,0" VerticalAlignment="Top" Width="75" Click="btnNewStudent_Click"/>
+                    <Button x:Name="btnNextStudent" Content="Next" HorizontalAlignment="Left" Margin="660,290,0,0" VerticalAlignment="Top" Width="75" Click="btnNextStudent_Click"/>
+                    <Button x:Name="btnPrevStudent" Content="Prev" HorizontalAlignment="Left" Margin="470,290,0,0" VerticalAlignment="Top" Width="75" Click="btnPrevStudent_Click"/>
+                    <Button x:Name="btnSaveStudent" Content="Save" HorizontalAlignment="Left" Margin="161,200,0,0" VerticalAlignment="Top" Width="75" Click="btnSaveStudent_Click">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="IsEnabled" Value="false" />
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding ElementName=numeTextBox, Path=(Validation.HasError)}" Value="false" />
+                                            <Condition Binding="{Binding ElementName=prenumeTextBox, Path=(Validation.HasError)}" Value="false" />
+                                            <Condition Binding="{Binding ElementName=nrTelTextBox, Path=(Validation.HasError)}" Value="false" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="IsEnabled" Value="true" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button x:Name="btnCancelStudent" Content="Cancel" HorizontalAlignment="Left" Margin="38,200,0,0" VerticalAlignment="Top" Width="75" Click="btnCancelStudent_Click"/>
+                    <DataGrid x:Name="studentDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}" Margin="452,53,31,100" RowDetailsVisibilityMode="VisibleWhenSelected">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="nrTelColumn" Binding="{Binding nrTel}" Header="nr Tel" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="numeColumn" Binding="{Binding nume}" Header="nume" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="prenumeColumn" Binding="{Binding prenume}" Header="prenume" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="studentIdColumn" Binding="{Binding studentId}" Header="student Id" Width="SizeToHeader"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Grid x:Name="grid1" HorizontalAlignment="Left" Margin="38,55,0,0" VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="nr Tel:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="0" VerticalAlignment="Center"/>
+                        <TextBox x:Name="nrTelTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="0" Text="{Binding nrTel, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Validation.ErrorTemplate="{StaticResource validationTemplate}" Style="{StaticResource textBoxInError}" VerticalAlignment="Center" Width="120" IsEnabled="False"/>
+                        <Label Content="nume:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="1" VerticalAlignment="Center"/>
+                        <TextBox x:Name="numeTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="1" Text="{Binding nume, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Validation.ErrorTemplate="{StaticResource validationTemplate}" Style="{StaticResource textBoxInError}" VerticalAlignment="Center" Width="120" IsEnabled="False"/>
+                        <Label Content="prenume:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="2" VerticalAlignment="Center"/>
+                        <TextBox x:Name="prenumeTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="2" Text="{Binding prenume, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Validation.ErrorTemplate="{StaticResource validationTemplate}" Style="{StaticResource textBoxInError}" VerticalAlignment="Center" Width="120" IsEnabled="False"/>
+                        <Label Content="student Id:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="3" VerticalAlignment="Center"/>
+                        <TextBox x:Name="studentIdTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="3" Text="{Binding studentId, Mode=OneWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120" IsEnabled="False"/>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Facultati">
+                <Grid Background="#FFE5E5E5" DataContext="{StaticResource facultateViewSource}">
+                    <Button x:Name="btnDeleteFacultate" Content="Delete" HorizontalAlignment="Left" Margin="337,133,0,0" VerticalAlignment="Top" Width="75" Click="btnDeleteFacultate_Click"/>
+                    <Button x:Name="btnEditFacultate" Content="Edit" HorizontalAlignment="Left" Margin="337,91,0,0" VerticalAlignment="Top" Width="75" Click="btnEditFacultate_Click"/>
+                    <Button x:Name="btnNewFacultate" Content="New" HorizontalAlignment="Left" Margin="337,53,0,0" VerticalAlignment="Top" Width="75" Click="btnNewFacultate_Click"/>
+                    <Button x:Name="btnNextFacultate" Content="Next" HorizontalAlignment="Left" Margin="626,281,0,0" VerticalAlignment="Top" Width="75" Click="btnNextFacultate_Click"/>
+                    <Button x:Name="btnPrevFacultate" Content="Prev" HorizontalAlignment="Left" Margin="450,276,0,0" VerticalAlignment="Top" Width="75" Click="btnPrevFacultate_Click"/>
+                    <Button x:Name="btnSaveFacultate" Content="Save" HorizontalAlignment="Left" Margin="188,181,0,0" VerticalAlignment="Top" Width="75" Click="btnSaveFacultate_Click">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="IsEnabled" Value="false" />
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding ElementName=nrTelFacultateTextBox, Path=(Validation.HasError)}" Value="false" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="IsEnabled" Value="true" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button x:Name="btnCancelFacultate" Content="Cancel" HorizontalAlignment="Left" Margin="50,181,0,0" VerticalAlignment="Top" Width="75" Click="btnCancelFacultate_Click"/>
+                    <DataGrid x:Name="facultateDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}" Margin="431,50,31,100" RowDetailsVisibilityMode="VisibleWhenSelected">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="facultateIdColumn" Binding="{Binding facultateId}" Header="facultate Id" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="nrTelFacultateColumn" Binding="{Binding nrTelFacultate}" Header="nr Tel Facultate" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="numeFacultateColumn" Binding="{Binding numeFacultate}" Header="nume Facultate" Width="SizeToHeader"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Grid x:Name="grid2" HorizontalAlignment="Left" Margin="38,57,0,0" VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="facultate Id:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="0" VerticalAlignment="Center"/>
+                        <TextBox x:Name="facultateIdTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="0" Text="{Binding facultateId, Mode=OneWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120" IsEnabled="False"/>
+                        <Label Content="nr Tel Facultate:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="1" VerticalAlignment="Center"/>
+                        <TextBox x:Name="nrTelFacultateTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="1" Text="{Binding nrTelFacultate, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Validation.ErrorTemplate="{StaticResource validationTemplate}" VerticalAlignment="Center" Width="120" IsEnabled="False"/>
+                        <Label Content="nume Facultate:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="2" VerticalAlignment="Center"/>
+                        <TextBox x:Name="numeFacultateTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="2" Text="{Binding numeFacultate, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Validation.ErrorTemplate="{StaticResource validationTemplate}" VerticalAlignment="Center" Width="120" IsEnabled="False"/>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Catalog" Margin="-2,-2,-2,0">
+                <Grid Background="#FFE5E5E5" DataContext="{StaticResource catalogViewSource}">
+                    <Button x:Name="btnDeleteCatalog" Content="Delete" HorizontalAlignment="Left" Margin="337,78,0,0" VerticalAlignment="Top" Width="75" Click="btnDeleteCatalog_Click"/>
+                    <Button x:Name="btnNewCatalog" Content="New" HorizontalAlignment="Left" Margin="337,53,0,0" VerticalAlignment="Top" Width="75" Click="btnNewCatalog_Click"/>
+                    <Button x:Name="btnSaveCatalog" Content="Save" HorizontalAlignment="Left" Margin="337,175,0,0" VerticalAlignment="Top" Width="75" Click="btnSaveCatalog_Click" IsEnabled="False"/>
+                    <Button x:Name="btnCancelCatalog" Content="Cancel" HorizontalAlignment="Left" Margin="337,211,0,0" VerticalAlignment="Top" Width="75" Click="btnCancelCatalog_Click" IsEnabled="False"/>
+                    <Grid x:Name="grid3" HorizontalAlignment="Left" Margin="38,57,0,0" VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                    </Grid>
+                    <ComboBox x:Name="facultateCmbBox" HorizontalAlignment="Left" Margin="10,62,0,0" VerticalAlignment="Top" Width="120" IsEnabled="False">
+                        
+                    </ComboBox>
+                    <ComboBox x:Name="studentiCmbBox" HorizontalAlignment="Left" Margin="161,62,0,0" VerticalAlignment="Top" Width="120" IsEnabled="False" >
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} {1}">
+                                            <Binding Path="nume"/>
+                                            <Binding Path="prenume"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <DataGrid x:Name="catalogDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}" RowDetailsVisibilityMode="VisibleWhenSelected" IsSynchronizedWithCurrentItem="True" Margin="0,126,448,-30" Visibility="Hidden">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="Nume" Binding="{Binding nume}" Header="Nume" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="Prenume" Binding="{Binding prenume}" Header="Prenume" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="Facultate" Binding="{Binding numeFacultate}" Header="Facultate" Width="SizeToHeader"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <DataGrid x:Name="catalogDataGrid1" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}" Margin="470,26,43,140" RowDetailsVisibilityMode="VisibleWhenSelected">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="catalogIdColumn" Binding="{Binding catalogId}" Header="catalog Id" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="facultateIdColumn1" Binding="{Binding facultateId}" Header="facultate Id" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="studentIdColumn1" Binding="{Binding studentId}" Header="student Id" Width="SizeToHeader"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</Window>
